@@ -6,8 +6,10 @@
 //
 
 import UIKit
+import Photos
 public enum NetworkUtils {
     static let DEFAULT_LINK = URL(string: "https://www.plugco.in/public/take_home_sample_feed")!
+    static let DOCUMENTS_PATH = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first! as URL
     
     static func getImageFromURL(imageUrl: URL, completion: @escaping (_ image: UIImage?, _ error: String?) -> Void) {
         URLSession.shared.dataTask(with: imageUrl) { (data, response, error) in
@@ -65,6 +67,41 @@ public enum NetworkUtils {
             
         }.resume()
     }
+    
+    static func downloadContent(contentUrl: URL, contentType: String){
+        let fileExtension = contentType == "video" ? ".mov" : ".jpg"
+        let filePath = DOCUMENTS_PATH.appendingPathComponent(String(format: "JetFuelMedia%d" + fileExtension, arc4random() % 1000))
+        URLSession.shared.downloadTask(with: contentUrl) { (tempUrl, response, error) in
+            if let returnedError = error {
+                print("There was an error downloading the Media:", returnedError.localizedDescription)
+            }
+            else if let localUrl = tempUrl{
+                do {
+                    try FileManager.default.moveItem(at: localUrl, to: filePath)
+                    PHPhotoLibrary.requestAuthorization({ (authorizationStatus: PHAuthorizationStatus) -> Void in
+                        
+                        // check if user authorized access photos for your app
+                        if authorizationStatus == .authorized {
+                            PHPhotoLibrary.shared().performChanges({ PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: filePath)}) { completed, error in
+                                if completed {
+                                    print("Video asset created")
+                                } else {
+                                    print(error)
+                                }
+                            }
+                        }
+                    })
+                } catch let saveError {
+                    print("There was an error saving the Media:", saveError.localizedDescription)
+                    
+                }
+            }
+        }.resume()
+        
+    }
+    
+    
+    
     
     
     

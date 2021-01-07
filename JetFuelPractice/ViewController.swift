@@ -61,6 +61,7 @@ class ViewController: UIViewController {
     
     
 }
+// MARK: - CollectionView Delegate methods
 
 extension ViewController:  UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -81,4 +82,30 @@ extension ViewController:  UICollectionViewDataSource, UICollectionViewDelegateF
         return CGSize(width: collectionView.frame.width, height: collectionView.frame.height/2.0)
     }
     
+}
+extension ViewController: MediaButtonResponder {
+    func downloadLink(sender: Any?) {
+        guard let feedCell = sender as? FeedCollectionViewCell else { return }
+        if let feedItem = feedCell.feedItem {
+            if let downloadUrl = URL(string: feedItem.downloadLink) {
+                NetworkUtils.downloadContent(contentUrl: downloadUrl, contentType: feedItem.mediaType)
+
+            } else {
+                print("Invalid link:", feedItem.downloadLink)
+            }
+        }
+
+        
+    }
+
+    func copyLink(sender: Any?) {
+        if let feedCell = sender as? FeedCollectionViewCell {
+            UIPasteboard.general.string = feedCell.feedItem?.trackingLink
+            let linkCopiedAlert = UIAlertController(title: "Copied!", message: "Media link was copied successfully.", preferredStyle: .alert)
+            linkCopiedAlert.addAction(.init(title: "OK", style: .default, handler: nil))
+            self.present(linkCopiedAlert, animated: true, completion: nil)
+        }
+    }
+
+
 }

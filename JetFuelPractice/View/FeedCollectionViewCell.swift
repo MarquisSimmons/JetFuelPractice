@@ -48,8 +48,7 @@ class FeedCollectionViewCell: UICollectionViewCell {
         button.layer.maskedCorners = [.layerMaxXMinYCorner,.layerMaxXMaxYCorner]
         button.layer.cornerRadius = 10
         button.layer.borderColor = UIColor.systemGray5.cgColor
-        button.layer.borderWidth = 0.5
-        
+        button.layer.borderWidth = 0.5        
         
         return button
     }()
@@ -68,7 +67,7 @@ class FeedCollectionViewCell: UICollectionViewCell {
         mediaPreviewImageView.addSubview(overlayView)
         mediaPreviewImageView.addSubview(mediaControlButton)
         
-
+        // Media Control buttons set up - Constraints
         let controlButtonConstraints = [
             mediaControlButton.centerXAnchor.constraint(equalTo: mediaPreviewImageView.centerXAnchor),
             mediaControlButton.centerYAnchor.constraint(equalTo: mediaPreviewImageView.centerYAnchor),
@@ -76,6 +75,7 @@ class FeedCollectionViewCell: UICollectionViewCell {
             mediaControlButton.heightAnchor.constraint(equalTo: mediaControlButton.widthAnchor, multiplier: 1.3)
         ]
         
+        // Download and copy link button setup - Stack creation
         let horizontalButtonStack = UIStackView(arrangedSubviews: [linkButton,downloadButton])
         horizontalButtonStack.axis = .horizontal
         horizontalButtonStack.distribution = .fill
@@ -84,17 +84,20 @@ class FeedCollectionViewCell: UICollectionViewCell {
         horizontalButtonStack.layer.borderColor = UIColor.systemGray5.cgColor
         horizontalButtonStack.layer.borderWidth = 1
         
+        // Creating Cell view stack (ImageView + Download and copy link buttons)
         let feedCellStackView = UIStackView(arrangedSubviews: [mediaPreviewImageView,horizontalButtonStack])
         feedCellStackView.spacing = 5
         feedCellStackView.axis = .vertical
         feedCellStackView.distribution = .fill
         feedCellStackView.translatesAutoresizingMaskIntoConstraints = false
         
+        // Download and copy link button setup - Stack constraints
         let horizontalButtonStackConstraints = [
-            horizontalButtonStack.leadingAnchor.constraint(equalTo: feedCellStackView.leadingAnchor),
-            horizontalButtonStack.trailingAnchor.constraint(equalTo: feedCellStackView.trailingAnchor),
+            horizontalButtonStack.leadingAnchor.constraint(equalTo: horizontalButtonStack.superview!.leadingAnchor),
+            horizontalButtonStack.trailingAnchor.constraint(equalTo: horizontalButtonStack.superview!.trailingAnchor),
         ]
         
+        // Thumbnail Image view constrains
         let mediaPreviewImageViewConstraints = [
             mediaPreviewImageView.leadingAnchor.constraint(equalTo: feedCellStackView.leadingAnchor),
             mediaPreviewImageView.trailingAnchor.constraint(equalTo: feedCellStackView.trailingAnchor),
@@ -107,7 +110,6 @@ class FeedCollectionViewCell: UICollectionViewCell {
             overlayView.bottomAnchor.constraint(equalTo: mediaPreviewImageView.bottomAnchor)
         ]
         
-        contentView.addSubview(feedCellStackView)
         let feedCellStackViewConstraints = [
             feedCellStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             feedCellStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
@@ -122,6 +124,8 @@ class FeedCollectionViewCell: UICollectionViewCell {
             linkButton.widthAnchor.constraint(equalTo: mediaPreviewImageView.widthAnchor, multiplier: 0.5),
             linkButton.heightAnchor.constraint(equalTo: linkButton.widthAnchor, multiplier: 0.95),
         ]
+        
+        contentView.addSubview(feedCellStackView)
         NSLayoutConstraint.activate(controlButtonConstraints)
         NSLayoutConstraint.activate(horizontalButtonStackConstraints)
         NSLayoutConstraint.activate(mediaPreviewImageViewConstraints)
@@ -129,10 +133,14 @@ class FeedCollectionViewCell: UICollectionViewCell {
         NSLayoutConstraint.activate(buttonStackButtonConstraints)
         NSLayoutConstraint.activate(overlayViewConstraints)
         
-
+        
         
     }
     func configure(with feedItem: FeedItem){
+        linkButton.addTarget(self, action: #selector(copyLinkButtonPressed), for: .touchUpInside)
+        downloadButton.addTarget(self, action: #selector(downloadButtonPressed), for: .touchUpInside)
+
+
         self.feedItem = feedItem
         if feedItem.mediaType == "video" {
             mediaControlButton.setBackgroundImage(UIImage(systemName: "play.fill"), for: .normal)
@@ -157,4 +165,19 @@ class FeedCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+   @objc func copyLinkButtonPressed() {
+    UIApplication.shared.sendAction(#selector(MediaButtonResponder.copyLink), to: nil, from: self, for: nil)
+        
+    }
+    @objc func downloadButtonPressed() {
+     UIApplication.shared.sendAction(#selector(MediaButtonResponder.downloadLink), to: nil, from: self, for: nil)
+         
+     }
+    
+    
+    
+}
+@objc protocol MediaButtonResponder: AnyObject {
+    func copyLink(sender: Any?)
+    func downloadLink(sender: Any?)
 }

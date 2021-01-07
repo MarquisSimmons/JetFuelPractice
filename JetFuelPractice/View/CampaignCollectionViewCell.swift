@@ -71,12 +71,13 @@ class CampaignCollectionViewCell: UICollectionViewCell{
         wholeCellStack.spacing = 0
         wholeCellStack.distribution = .fill
         wholeCellStack.translatesAutoresizingMaskIntoConstraints = false
+        wholeCellStack.backgroundColor = .clear
         
         // Campaign Header Set Up - Adding constraints
         let iconConstraints = [
             campaignIcon.leadingAnchor.constraint(equalTo: campaignHeaderView.leadingAnchor, constant: 10),
             campaignIcon.centerYAnchor.constraint(equalTo: campaignHeaderView.centerYAnchor),
-            campaignIcon.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.2),
+            campaignIcon.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.18),
             campaignIcon.heightAnchor.constraint(equalTo: campaignIcon.widthAnchor),
         ]
         let labelConstraints = [
@@ -120,7 +121,6 @@ class CampaignCollectionViewCell: UICollectionViewCell{
         campaignHeaderView.addSubview(campaignIcon)
         campaignHeaderView.addSubview(campaignInfoStackView)
         contentView.addSubview(wholeCellStack)
-        wholeCellStack.backgroundColor = .clear
         
         
         NSLayoutConstraint.activate(wholeCellStackConstraints)
@@ -156,7 +156,7 @@ class CampaignCollectionViewCell: UICollectionViewCell{
                 strongSelf.campaignIcon.image = image
             }
         }
-
+        feedCollection.reloadData()
     }
     
 }
