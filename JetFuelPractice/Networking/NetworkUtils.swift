@@ -7,7 +7,7 @@
 
 import UIKit
 import Photos
-public enum NetworkUtils {
+public class NetworkUtils {
     static let DEFAULT_LINK = URL(string: "https://www.plugco.in/public/take_home_sample_feed")!
     static let DOCUMENTS_PATH = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first! as URL
     
