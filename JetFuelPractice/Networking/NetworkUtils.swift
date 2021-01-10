@@ -54,22 +54,7 @@ public class NetworkUtils {
                     let feedJson = try JSONSerialization.jsonObject(with: data!, options: .mutableContainers)
                     for campaignList in feedJson as! [String: Any] {
                         for campaign in campaignList.value as! [[String:Any]] {
-                            var mediaList = [FeedItem]()
-                            let campaignName = campaign["campaign_name"] as! String
-                            let campaignId = campaign["id"] as! Int
-                            let campaignIcon = campaign["campaign_icon_url"] as! String
-                            let campaignPayPerInstall = campaign["pay_per_install"] as! String
-                            let campaignMedia = campaign["medias"] as! [[String:Any]]
-                            
-                            for media in campaignMedia {
-                                let imageLink = media["cover_photo_url"] as! String
-                                let downloadLink = media["download_url"] as! String
-                                let trackingLink = media["tracking_link"] as! String
-                                let mediaType = media["media_type"] as! String
-                                let mediaItem =  FeedItem(imageLink: imageLink, mediaType: mediaType, downloadLink: downloadLink, trackingLink: trackingLink)
-                                mediaList.append(mediaItem)
-                            }
-                            let campaignItem = CampaignItem(campaignImageLink: campaignIcon, campaignName: campaignName, campaignPayPerInstall: campaignPayPerInstall, campaignMedia: mediaList, campaignId: campaignId)
+                            let campaignItem = CampaignItem(with:campaign)
                             campaignItems.append(campaignItem)
                         }
                     }
